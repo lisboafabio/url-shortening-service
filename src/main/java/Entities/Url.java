@@ -1,11 +1,19 @@
 package Entities;
 
 import jakarta.persistence.*;
-
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.io.Serializable;
+import java.time.Instant;
 
 @Entity
 @Table(name = "urls")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Url implements Serializable {
 
     @Id
@@ -13,21 +21,12 @@ public class Url implements Serializable {
     private Long id;
 
     private String url;
-    private String shortCode;
+    private String short_code;
 
-    public String getUrl() {
-        return url;
-    }
+    @CreatedDate
+    private Instant created_at;
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    @LastModifiedDate
+    private Instant updated_at;
 
-    public String getShortCode() {
-        return shortCode;
-    }
-
-    public void setShortCode(String shortCode) {
-        this.shortCode = shortCode;
-    }
 }
