@@ -1,9 +1,11 @@
 package Dto;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 public class UrlDto {
 
     @NotNull(message = "Url cannot be null")
@@ -15,15 +17,8 @@ public class UrlDto {
         shortUrl = UUID.randomUUID().toString();
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     public void setUrl(String url) {
         this.url = url;
     }
 
-    public String getShortUrl() {
-        return shortUrl;
-    }
 }
