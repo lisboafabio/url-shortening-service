@@ -184,7 +184,7 @@ class ShortUrlApplicationTests {
         Url urlPersisted = urlService.save(dto);
 
         mockMvc.perform(
-                patch("/shorten/"+urlPersisted.getShortCode()+"/times-accessed")
+                put("/shorten/"+urlPersisted.getShortCode()+"/times-accessed")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isAccepted());

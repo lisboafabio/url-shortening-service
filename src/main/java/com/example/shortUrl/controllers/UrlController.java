@@ -62,7 +62,7 @@ public class UrlController {
         return ResponseEntity.notFound().build();
     }
 
-    @PatchMapping(value = "/{short_code}/times-accessed")
+    @PutMapping(value = "/{short_code}/times-accessed")
     public ResponseEntity<Object> updateTimesAccessed(@PathVariable String short_code) {
         if (urlService.updateTimesAccessed(short_code)) {
             return ResponseEntity.accepted().build();
