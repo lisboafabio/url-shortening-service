@@ -47,6 +47,14 @@ class ShortUrlApplicationTests {
     }
 
     @Test
+    public void healthyTest() throws Exception {
+        mockMvc.perform(get("/health-check").accept(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.status").exists())
+            .andExpect(jsonPath("$.status").value("OK"))
+            .andExpect(jsonPath("$.timestamp").exists());
+    }
+
+    @Test
     void getAllShortUrls() throws Exception {
         mockMvc.perform(get("/api/url/all"))
         .andExpect(status().isOk())

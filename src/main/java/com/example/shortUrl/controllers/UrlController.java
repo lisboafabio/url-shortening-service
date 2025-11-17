@@ -1,4 +1,4 @@
-package com.example.shortUrl.controller;
+package com.example.shortUrl.controllers;
 
 import com.example.shortUrl.dto.UrlDto;
 
