@@ -56,7 +56,7 @@ class ShortUrlApplicationTests {
 
     @Test
     void getAllShortUrls() throws Exception {
-        mockMvc.perform(get("/api/url/all"))
+        mockMvc.perform(get("/shorten/all"))
         .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.content").exists());
@@ -65,7 +65,7 @@ class ShortUrlApplicationTests {
     @Test
     void failedCreateShortUrl() throws Exception {
         mockMvc.perform(
-            post("/api/url")
+            post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
 
@@ -77,7 +77,7 @@ class ShortUrlApplicationTests {
         payload.put("url", "google dsad");
 
         mockMvc.perform(
-            post("/api/url")
+            post("/shorten")
                     .contentType(MediaType.APPLICATION_JSON).
                     content(new ObjectMapper().writeValueAsString(payload))
         ).andExpect(status().isBadRequest());
@@ -89,7 +89,7 @@ class ShortUrlApplicationTests {
         payload.put("url", "https://google.com");
 
         mockMvc.perform(
-            post("/api/url")
+            post("/shorten")
             .contentType(MediaType.APPLICATION_JSON).
             content(new ObjectMapper().writeValueAsString(payload))
         ).andExpect(status().isCreated())
@@ -100,7 +100,7 @@ class ShortUrlApplicationTests {
     @Test
     void failedFindShortUrlByCode() throws Exception {
         mockMvc.perform(
-                get("/api/url/dsadsa")
+                get("/shorten/dsadsa")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -113,7 +113,7 @@ class ShortUrlApplicationTests {
         Url urlPersisted = urlService.save(dto);
 
         mockMvc.perform(
-            get("/api/url/"+urlPersisted.getShortCode())
+            get("/shorten/"+urlPersisted.getShortCode())
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk())
@@ -129,10 +129,10 @@ class ShortUrlApplicationTests {
         HashMap<String, String> payload = new HashMap<>();
         payload.put("url", "https://google.com");
         mockMvc.perform(
-                patch("/api/url/dsadsa")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(payload))
+                put("/shorten/dsadsa")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(payload))
         ).andExpect(status().isNotFound());
     }
 
@@ -147,7 +147,7 @@ class ShortUrlApplicationTests {
         payload.put("url", newUrl);
 
         mockMvc.perform(
-            patch("/api/url/".concat(urlPersisted.getShortCode()))
+            put("/shorten/".concat(urlPersisted.getShortCode()))
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .content(new ObjectMapper().writeValueAsString(payload))
@@ -158,7 +158,7 @@ class ShortUrlApplicationTests {
     @Test
     void failedDeleteShortUrl() throws Exception {
         mockMvc.perform(
-                delete("/api/url/dsadsa")
+                delete("/shorten/dsadsa")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
@@ -171,10 +171,10 @@ class ShortUrlApplicationTests {
         Url urlPersisted = urlService.save(dto);
 
         mockMvc.perform(
-            delete("/api/url/"+urlPersisted.getShortCode())
+            delete("/shorten/"+urlPersisted.getShortCode())
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isAccepted());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
@@ -184,7 +184,7 @@ class ShortUrlApplicationTests {
         Url urlPersisted = urlService.save(dto);
 
         mockMvc.perform(
-                patch("/api/url/"+urlPersisted.getShortCode()+"/times-accessed")
+                patch("/shorten/"+urlPersisted.getShortCode()+"/times-accessed")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isAccepted());
@@ -192,5 +192,20 @@ class ShortUrlApplicationTests {
 
         Url urlFromDatabase = repository.findByShortCode(urlPersisted.getShortCode());
         assertThat(urlFromDatabase.getTimesAccessed()).isEqualTo(urlPersisted.getTimesAccessed()+1);
+    }
+
+    @Test
+    void getUrlStats() throws Exception {
+        UrlDto dto = new UrlDto();
+        dto.setUrl("https://google.com");
+        Url urlPersisted = urlService.save(dto);
+
+        mockMvc.perform(
+                get("/shorten/"+urlPersisted.getShortCode()+"/stats")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isOk())
+        .andExpect(content().contentType("application/json"))
+        .andExpect(jsonPath("$").isNotEmpty());
     }
 }

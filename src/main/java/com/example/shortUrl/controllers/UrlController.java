@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping(value="/api/url")
+@RequestMapping(value="/shorten")
 public class UrlController {
 
     @Autowired
@@ -44,7 +44,7 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.urlService.save(urlDto));
     }
 
-    @PatchMapping(value = "/{short_url}")
+    @PutMapping(value = "/{short_url}")
     public ResponseEntity<Object> update(@PathVariable String short_url, @RequestBody UrlDto urlDto) {
         if (urlService.update(short_url, urlDto.getUrl())) {
             return ResponseEntity.accepted().build();
@@ -56,7 +56,7 @@ public class UrlController {
     @DeleteMapping(value = "/{short_url}")
     public ResponseEntity<Object> delete(@PathVariable String short_url) {
         if (urlService.delete(short_url)) {
-            return ResponseEntity.accepted().build();
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.notFound().build();
@@ -66,6 +66,16 @@ public class UrlController {
     public ResponseEntity<Object> updateTimesAccessed(@PathVariable String short_code) {
         if (urlService.updateTimesAccessed(short_code)) {
             return ResponseEntity.accepted().build();
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/{short_code}/stats")
+    public ResponseEntity<Object> urlStats(@PathVariable String short_code) {
+        Url url = urlService.findByShortCode(short_code);
+        if (url != null) {
+            return ResponseEntity.ok().body(url);
         }
 
         return ResponseEntity.notFound().build();
